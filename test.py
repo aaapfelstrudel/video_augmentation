@@ -1,9 +1,35 @@
-import torch
+import os
 import faiss
 import numpy as np
 from PIL import Image
-from torchvision import transforms
-from dinov2.model import load_dinov2_model  # Hypothetical import, depending on actual DINOV2 implementation
+import torch
+import torchvision.transforms as transforms
+import warnings
+
+warnings.filterwarnings("ignore")
+
+# Paths to the query and base image directories
+query_path = '/home/ruei/internship/video_augmentation/dataset/extracted_frames'
+base_path = '/home/ruei/internship/video_augmentation/dataset/random'
+
+# Paths to specific images in the query and base directories
+query_image_paths = [
+    os.path.join(query_path, "00001.png"),
+    os.path.join(query_path, "00018.png"),
+    os.path.join(query_path, "00034.png")
+]
+
+base_image_paths = [
+    os.path.join(base_path, "berlin_000534_000019_leftImg8bit.png"),
+    os.path.join(base_path, "bielefeld_000000_000321_leftImg8bit.png"),
+    os.path.join(base_path, "leverkusen_000009_000019_leftImg8bit.png")
+]
+
+# Load the DINOV2 model
+# Replace with the actual way to load the DINOV2 model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = torch.hub.load("facebookresearch/dinov2", "dinov2_vitb14")
+model = model.to(device)
 
 # Define functions to extract features using DINOV2
 def extract_features(model, images, device):
@@ -11,24 +37,14 @@ def extract_features(model, images, device):
     features = []
     with torch.no_grad():
         images = images.to(device)
-        feature = model(images)
+        feature = model(images.float())
         features.append(feature.cpu().numpy())
     return np.vstack(features)
-
-# Load the DINOV2 model
-# Replace with the actual way to load the DINOV2 model
-model = load_dinov2_model("dinov2_model_path")  # Example placeholder
-model = model.to("cuda" if torch.cuda.is_available() else "cpu")
-
-# Load the images - query and base
-# Assuming we have 3 query images and 3 base images
-query_image_paths = ["/path/to/query1.jpg", "/path/to/query2.jpg", "/path/to/query3.jpg"]
-base_image_paths = ["/path/to/base1.jpg", "/path/to/base2.jpg", "/path/to/base3.jpg"]
 
 data_transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
 # Process query images
@@ -48,7 +64,6 @@ for img_path in base_image_paths:
 base_images = torch.stack(base_images)
 
 # Extract features from query and base images
-device = "cuda" if torch.cuda.is_available() else "cpu"
 query_features = extract_features(model, query_images, device)
 base_features = extract_features(model, base_images, device)
 
