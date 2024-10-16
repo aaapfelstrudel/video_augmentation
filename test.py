@@ -9,8 +9,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Paths to the query and base image directories
-query_path = '/home/ruei/internship/video_augmentation/dataset/extracted_frames'
-base_path = '/home/ruei/internship/video_augmentation/dataset/random'
+query_path = '/gpfs/home4/dshen/video_augmentation/dataset/extracted_frames'
+base_path = '/gpfs/home4/dshen/video_augmentation/dataset/random'
 
 # Paths to specific images in the query and base directories
 query_image_paths = [
