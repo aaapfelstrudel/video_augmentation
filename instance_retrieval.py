@@ -10,6 +10,7 @@ from data.cityscapes_dataset import cityscapesDataSet
 # Paths to the query and base image directories
 query_path = r'C:\Users\DR\video_augmentation\dataset\gta5'
 base_path = r'C:\Users\DR\video_augmentation\dataset\cityscapes'
+result_path = r'C:\Users\DR\video_augmentation\result'
 
 # Load the DINOV2 model
 # Replace with the actual way to load the DINOV2 model
@@ -75,14 +76,8 @@ for i in range(0,len(city)):
 
     result = instance_retrieval(gta_images, gta_labels, city_features, city_labels, len(city_features))
 
-    # hey chatgpt, add the program that can save the result for instance retrieval as csv file using each
-    # city as unit like {city name}.csv in the path: C:\Users\DR\video_augmentation\result
-    # maybe sth like this csv.saved(result, filename=city=city[i], path=C:\Users\DR\video_augmentation\result)
-    # also i want to label the data in the csv file so i make some changes in the function: instance_retrieval
-    # specifically, similarity_mtx[0, :] = labels[indices[0]] . because i want the csv file like this:
-    #  
-    #             bonn_000000_000019_leftImg8bit  bonn_000001_000019_leftImg8bit  bonn_000002_000019_leftImg8bit
-    # gta_image1               score                             score                          score
-    # gta_image1               score                             score                          score
-    # gta_image1               score                             score                          score               
-    #
+    # Save the result as CSV file using the city name
+    df_result = pd.DataFrame(result)
+    result_filename = os.path.join(result_path, f"{city[i]}.csv")
+    df_result.to_csv(result_filename, index=False, header=False)
+    print(f"Saved similarity matrix for city '{city[i]}' to '{result_filename}'")
