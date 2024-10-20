@@ -9,8 +9,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Paths to the query and base image directories
-query_path = '/gpfs/home4/dshen/video_augmentation/dataset/extracted_frames'
-base_path = '/gpfs/home4/dshen/video_augmentation/dataset/random'
+query_path = "/gpfs/home4/dshen/dataset/gta5/gta_1/"
+base_path = "/gpfs/home4/dshen/dataset/cityscape/berlin/"
 
 # Paths to specific images in the query and base directories
 query_image_paths = [
@@ -20,9 +20,9 @@ query_image_paths = [
 ]
 
 base_image_paths = [
-    os.path.join(base_path, "berlin_000534_000019_leftImg8bit.png"),
-    os.path.join(base_path, "bielefeld_000000_000321_leftImg8bit.png"),
-    os.path.join(base_path, "leverkusen_000009_000019_leftImg8bit.png")
+    os.path.join(base_path, "berlin_000000_000019_leftImg8bit.png"),
+    os.path.join(base_path, "berlin_000001_000019_leftImg8bit.png"),
+    os.path.join(base_path, "berlin_000002_000019_leftImg8bit.png")
 ]
 
 # Load the DINOV2 model
@@ -52,6 +52,7 @@ query_images = []
 for img_path in query_image_paths:
     image = Image.open(img_path).convert("RGB")
     image = data_transform(image)
+    print(image)
     query_images.append(image)
 query_images = torch.stack(query_images)
 

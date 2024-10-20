@@ -9,17 +9,16 @@ from PIL import Image
 
 class GTA5DataSet(data.Dataset):
 
-    def __init__(self, root, color='RGB', index=1, resize=(224, 224), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
+    def __init__(self, root, color='RGB', clip='gta_1', resize=(224, 224), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
         self.root = root  # Folder for GTA5 which contains subfolder images
         self.color = color
-        self.index = index
         self.resize = resize
         self.mean = mean
         self.std = std
         self.status = False
 
         # Get all subfolders in the root directory
-        self.existing_files = sorted(os.listdir(root), key=lambda x: int(x.split('_')[1]))
+        self.existing_files = clip
         self.frames = []
 
     def __len__(self):
@@ -53,14 +52,14 @@ class GTA5DataSet(data.Dataset):
         # Initialize frames if empty
         if self.is_empty(self.frames):
             # Get the folder name corresponding to the given index
-            folder_name = self.existing_files[self.index-1]
+            folder_name = self.existing_files
             self.frames = self.compilation(folder_name)
 
         # Get the current frame name
         frame_name = self.frames.pop(0)
 
         # Build the full path to the image file
-        folder_name = self.existing_files[self.index-1]
+        folder_name = self.existing_files
         img_path = osp.join(self.root, folder_name, frame_name)
         # print(self.existing_files)
 
@@ -71,13 +70,9 @@ class GTA5DataSet(data.Dataset):
         # Create a label indicating the source folder and frame name
         label = f"{folder_name}/{frame_name}"
 
-        # If frames list is empty, move to the next folder
+        # Ensure the index is valid
         if self.is_empty(self.frames):
-            self.index += 1
-
-            # Ensure the index is valid
-        if self.out_of_bounds(self.existing_files):
-            print("GTA5 Dataset fully traversed. Index:", self.index)
+            print("GTA5 Dataset fully traversed. Index:")
             self.status = True
 
         return image, label, self.status
